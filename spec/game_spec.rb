@@ -82,15 +82,9 @@ describe Game do
   describe '#is_stalemate' do
     it 'returns true if 9 moves have been made' do
       test_game = Game.new({ :player1 => 'Ben', :player2 => 'Lauren' })
-      test_game.make_move(1)
-      test_game.make_move(2)
-      test_game.make_move(3)
-      test_game.make_move(4)
-      test_game.make_move(5)
-      test_game.make_move(6)
-      test_game.make_move(7)
-      test_game.make_move(8)
-      test_game.make_move(9)
+      (1..9).each do |number|
+        test_game.make_move(number)
+      end
       test_game.is_stalemate.should eq true
     end
   end

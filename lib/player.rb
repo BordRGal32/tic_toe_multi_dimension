@@ -9,6 +9,7 @@ class Player
   def add_space(value)
     @spaces << value
   end
+
   def clear_spaces
     @spaces = []
   end

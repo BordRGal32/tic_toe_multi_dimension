@@ -45,7 +45,7 @@ def game_menu
     move_choice = gets.chomp
   end
 
-  if @current_game.make_move(move_choice) == 'not a valid move'
+  if !@current_game.make_move(move_choice)
     puts "You are dumb that spot is taken. Press enter to try again."
     gets
     game_menu

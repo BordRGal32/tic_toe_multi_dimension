@@ -1,6 +1,8 @@
 class Space
   attr_reader :position, :player
+
   @@all_space = []
+
   def Space.create(attributes)
     new_space = Space.new(attributes)
     new_space.save
