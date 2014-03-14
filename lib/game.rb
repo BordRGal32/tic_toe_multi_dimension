@@ -1,37 +1,43 @@
-class Game
-  attr_reader :player1, :player2, :current_player, :spaces
+# require 'board'
+# require 'player'
 
-  def initialize(attributes)
-    @player1 = Player.new(attributes[:player1])
-    @player2 = Player.new(attributes[:player2])
-    @spaces = []
+class Game
+  attr_reader :boards, :players, :current_player, :board_dimensions
+
+  def initialize(number_players, board_dimensions)
+    @players = []
+    1.upto(number_players.to_i) { |index| @players << Player.new(index,board_dimensions) }
+    @boards = []
+    @board_dimensions = board_dimensions
+    board_counter = 1
+    1.upto(board_dimensions.to_i) do
+      1.upto(board_dimensions.to_i) do
+        @boards << Board.new(board_counter)
+        board_counter += 1
+      end
+    end
     who_starts
   end
 
   def switch_player
-    if @current_player == @player1
-      @current_player = @player2
-    else
-      @current_player = @player1
-    end
+    temp_player = @players.shift
+    @current_player = @players.first
+    @players << temp_player
   end
 
   def whose_turn
-    @current_player.id
+    @current_player.name
   end
 
   def who_starts
-    if rand(2) == 0
-      @current_player = @player1
-    else
-      @current_player = @player2
-    end
+    @players.shuffle!
+    @current_player = @players.first
   end
 
-  def make_move(value)
-    if !@spaces.include?(value)
-      @current_player.add_space(value)
-      @spaces << value
+  def make_move(board_number, value)
+    if !@boards[board_number - 1].board_spaces.include?(value)
+      @current_player.add_space(board_number, value)
+      @boards[board_number - 1].board_spaces << value
       true
     else
       false
@@ -39,18 +45,58 @@ class Game
   end
 
   def is_winner
-    [1,2,3] - current_player.spaces == [] ||
-    [4,5,6] - current_player.spaces == [] ||
-    [7,8,9] - current_player.spaces == [] ||
-    [1,4,7] - current_player.spaces == [] ||
-    [2,5,8] - current_player.spaces == [] ||
-    [3,6,9] - current_player.spaces == [] ||
-    [1,5,9] - current_player.spaces == [] ||
-    [3,5,7] - current_player.spaces == []
+    big_winner = ""
+    0.upto(@board_dimensions - 1) do |i|
+      h_results = []
+      (i*board_dimensions).upto(i*board_dimensions + board_dimensions) do |j|
+        h_results << boards[j-1].winner
+      end
+      if h_results.uniq! != nil
+        if h_results.length == 1
+          big_winner = h_results[0]
+        end
+      end
+    end
+    1.upto(@board_dimensions) do |i|
+      v_results = []
+      0.upto(@board_dimensions - 1) do |j|
+        v_results << @boards[ i + j * @board_dimensions - 1]
+      end
+      if v_results.uniq! != nil
+        if v_results.length == 1
+          big_winner = v_results[0]
+        end
+      end
+    end
+    d_results = []
+    0.upto(board_dimensions - 1) do |i|
+      d_results << @boards[ i * (@board_dimensions + 1) + 1]
+    end
+    if d_results.uniq! != nil
+      if d_results.length == 1
+        big_winner = d_results[0]
+      end
+    end
+    d_results = []
+    0.upto(board_dimensions - 1) do |i|
+      d_results << @boards[ i * (@board_dimensions - 1) + @board_dimensions]
+    end
+    if d_results.uniq! != nil
+      if d_results.length == 1
+        big_winner = d_results[0]
+      end
+    end
+    big_winner
   end
 
   def is_stalemate
-    @spaces.length == 9
+    stalemate = true
+    @boards.each do |brd|
+      if brd.board_spaces.length != 9
+        stalemate = false
+      end
+    end
+    stalemate
   end
 
   def new_game

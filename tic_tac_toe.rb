@@ -1,5 +1,6 @@
 require './lib/game'
 require './lib/player'
+require './lib/board'
 
 @current_game
 
@@ -24,11 +25,19 @@ def game_start
   system('clear')
   puts "*******************\n*TIC ** TAC ** TOE*\n*******************\n\n"
   puts "Welcome to the best time you've had in years!"
-  puts "Enter player 1's name:"
-  player_1 = gets.chomp
-  puts "Enter player 2's name:"
-  player_2 = gets.chomp
-  @current_game = Game.new({ :player1 => player_1, :player2 => player_2})
+  puts "How many players are playing?"
+  num_players = gets.chomp.to_i
+  puts "How wide/tall should the board of boards be?"
+  board_num = gets.chomp.to_i
+  @current_game = Game.new(num_players, board_num)
+  1.upto(num_players) do |i|
+    puts "Enter a player name."
+    player_name = gets.chomp
+    puts "Enter that players letter."
+    player_letter = gets.chomp
+    @current_game.players[i - 1].set_name(player_name)
+    @current_game.players[i - 1].set_letter(player_letter)
+  end
   puts "#{@current_game.whose_turn} goes first!\nPress enter to begin!"
   gets
   game_menu
@@ -76,44 +85,56 @@ def game_stalemate
 end
 
 def display_board
-  array1 = []
-  for i in 1..3
-    if @current_game.spaces.include?(i)
-      if @current_game.player1.spaces.include?(i)
-        array1 << "X"
-      else
-        array1 << "O"
+  k = 0
+  1.upto(@current_game.board_dimensions) do |n|
+    1.upto(@current_game.board_dimensions) do |m|
+      for j in 1..@current_game.board_dimensions
+        array1 = []
+        for i in 1..3
+          if @current_game.boards[j].board_spaces.include?(i)
+          #   if @current_game.players.spaces.include?(i)
+          #     array1 << "X"
+          #   else
+          #     array1 << "O"
+          #   end
+          # else
+            array1 << i
+          end
+        end
+        print "#{array1.join("|")} | "
       end
-    else
-      array1 << i
-    end
-  end
-  array2 = []
-  for i in 4..6
-    if @current_game.spaces.include?(i)
-      if @current_game.player1.spaces.include?(i)
-        array2 << "X"
-      else
-        array2 << "O"
+
+
+      array2 = []
+      for i in 4..6
+        if @current_game.boards[j].board_spaces.include?(i)
+        #   if @current_game.player1.spaces.include?(i)
+        #     array2 << "X"
+        #   else
+        #     array2 << "O"
+        #   end
+        # else
+          array2 << i
+        end
       end
-    else
-      array2 << i
-    end
-  end
-  array3 = []
-  for i in 7..9
-    if @current_game.spaces.include?(i)
-      if @current_game.player1.spaces.include?(i)
-        array3 << "X"
-      else
-        array3 << "O"
+      array3 = []
+      for i in 7..9
+        if @current_game.boards[j].board_spaces.include?(i)
+        #   if @current_game.player1.spaces.include?(i)
+        #     array3 << "X"
+        #   else
+        #     array3 << "O"
+        #   end
+        # else
+          array3 << i
+        end
       end
-    else
-      array3 << i
+      print "-------\n[#{array1.join("|")}]\n-------\n[#{array2.join("|")}]\n-------\n[#{array3.join("|")}]\n-------"
     end
+    k += 1
+    print "\n"
   end
-  puts "-------\n[#{array1.join("|")}]\n-------\n[#{array2.join("|")}]\n-------\n[#{array3.join("|")}]\n-------"
-  end
+end
 
 def idiot_menu
   system('clear')
