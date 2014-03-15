@@ -45,16 +45,21 @@ end
 
 def game_menu
   system('clear')
-  puts "#{@current_game.whose_turn}, choose the number of the square you want."
-
   display_board
+  puts "#{@current_game.whose_turn} chose the number of the board you want play on"
+  board_choice = gets.chomp.to_i
+  while board_choice < 1 || board_choice > @current_game.board_dimensions**2
+    puts "that board does not exist. Try again"
+    board_choice = gets.chomp.to_i
+  end
+  puts "#{@current_game.whose_turn} chose the space on the board that you want to play"
   move_choice = gets.chomp.to_i
   while move_choice > 9 || move_choice < 1
     puts "That is not even on the board. Come on. Try again."
     move_choice = gets.chomp
   end
 
-  if !@current_game.make_move(move_choice)
+  if !@current_game.make_move(board_choice, move_choice)
     puts "You are dumb that spot is taken. Press enter to try again."
     gets
     game_menu
@@ -85,53 +90,76 @@ def game_stalemate
 end
 
 def display_board
-  k = 0
-  1.upto(@current_game.board_dimensions) do |n|
-    1.upto(@current_game.board_dimensions) do |m|
-      for j in 1..@current_game.board_dimensions
-        array1 = []
-        for i in 1..3
-          if @current_game.boards[j].board_spaces.include?(i)
-          #   if @current_game.players.spaces.include?(i)
-          #     array1 << "X"
-          #   else
-          #     array1 << "O"
-          #   end
-          # else
-            array1 << i
+  1.upto(@current_game.board_dimensions) do |n| #vertical board locations
+    1.upto(@current_game.board_dimensions) do |p| #Above 1st row board number generation.
+      board_id = (@current_game.board_dimensions * (n - 1)) + p
+      if board_id < 10
+        print "#{board_id}        "
+      else
+        print "#{board_id}       "
+      end
+    end
+    print "\n"
+    1.upto(@current_game.board_dimensions) do |m| #1st row loop horizontal board locations
+      board_row1_array = []
+      for i in 1..3
+        space_value = i
+        if @current_game.boards[(@current_game.board_dimensions * (n - 1)) + m - 1].board_spaces.include?(i)
+          @current_game.players.each do |player|
+            if player.every_space[(@current_game.board_dimensions * (n - 1)) + m - 1].include?(i)
+              space_value = player.letter
+            end
           end
         end
-        print "#{array1.join("|")} | "
+        board_row1_array << space_value
       end
-
-
-      array2 = []
-      for i in 4..6
-        if @current_game.boards[j].board_spaces.include?(i)
-        #   if @current_game.player1.spaces.include?(i)
-        #     array2 << "X"
-        #   else
-        #     array2 << "O"
-        #   end
-        # else
-          array2 << i
-        end
+      print "#{board_row1_array.join("|")}"
+      if m < @current_game.board_dimensions
+        print " || "
+      else
+        print "\n"
       end
-      array3 = []
-      for i in 7..9
-        if @current_game.boards[j].board_spaces.include?(i)
-        #   if @current_game.player1.spaces.include?(i)
-        #     array3 << "X"
-        #   else
-        #     array3 << "O"
-        #   end
-        # else
-          array3 << i
-        end
-      end
-      print "-------\n[#{array1.join("|")}]\n-------\n[#{array2.join("|")}]\n-------\n[#{array3.join("|")}]\n-------"
     end
-    k += 1
+    1.upto(@current_game.board_dimensions) do |m| #2nd row loop horizontal board locations
+      board_row2_array = []
+      for i in 4..6
+        space_value = i
+        if @current_game.boards[(@current_game.board_dimensions * (n - 1)) + m - 1].board_spaces.include?(i)
+          @current_game.players.each do |player|
+            if player.every_space[(@current_game.board_dimensions * (n - 1)) + m - 1].include?(i)
+              space_value = player.letter
+            end
+          end
+        end
+        board_row2_array << space_value
+      end
+      print "#{board_row2_array.join("|")}"
+      if m < @current_game.board_dimensions
+        print " || "
+      else
+        print "\n"
+      end
+    end
+    1.upto(@current_game.board_dimensions) do |m| #3rd row loop horizontal board locations
+      board_row3_array = []
+      for i in 7..9
+        space_value = i
+        if @current_game.boards[(@current_game.board_dimensions * (n - 1)) + m - 1].board_spaces.include?(i)
+          @current_game.players.each do |player|
+            if player.every_space[(@current_game.board_dimensions * (n - 1)) + m - 1].include?(i)
+              space_value = player.letter
+            end
+          end
+        end
+        board_row3_array << space_value
+      end
+      print "#{board_row3_array.join("|")}"
+      if m < @current_game.board_dimensions
+        print " || "
+      else
+        print "\n"
+      end
+    end
     print "\n"
   end
 end

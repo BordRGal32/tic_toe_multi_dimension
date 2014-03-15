@@ -21,8 +21,8 @@ class Game
 
   def switch_player
     temp_player = @players.shift
-    @current_player = @players.first
     @players << temp_player
+    @current_player = @players.first
   end
 
   def whose_turn
@@ -45,47 +45,47 @@ class Game
   end
 
   def is_winner
-    big_winner = ""
+    big_winner = false
     0.upto(@board_dimensions - 1) do |i|
       h_results = []
       (i*board_dimensions).upto(i*board_dimensions + board_dimensions) do |j|
-        h_results << boards[j-1].winner
+        h_results << boards[j-1].winner_check(@current_player)
       end
       if h_results.uniq! != nil
-        if h_results.length == 1
-          big_winner = h_results[0]
+        if h_results.length == 1 && h_results[0] != nil
+          big_winner = true
         end
       end
     end
     1.upto(@board_dimensions) do |i|
       v_results = []
       0.upto(@board_dimensions - 1) do |j|
-        v_results << @boards[ i + j * @board_dimensions - 1]
+        v_results << @boards[ i + (j * @board_dimensions) - 1].winner_check(@current_player)
       end
       if v_results.uniq! != nil
-        if v_results.length == 1
-          big_winner = v_results[0]
+        if v_results.length == 1 && v_results[0] != nil
+          big_winner = true
         end
       end
     end
-    d_results = []
-    0.upto(board_dimensions - 1) do |i|
-      d_results << @boards[ i * (@board_dimensions + 1) + 1]
-    end
-    if d_results.uniq! != nil
-      if d_results.length == 1
-        big_winner = d_results[0]
-      end
-    end
-    d_results = []
-    0.upto(board_dimensions - 1) do |i|
-      d_results << @boards[ i * (@board_dimensions - 1) + @board_dimensions]
-    end
-    if d_results.uniq! != nil
-      if d_results.length == 1
-        big_winner = d_results[0]
-      end
-    end
+    # d_results = []
+    # 0.upto(board_dimensions - 1) do |i|
+    #   d_results << @boards[ i * (@board_dimensions + 1) + 1].winner_check(@current_player)
+    # end
+    # if d_results.uniq! != nil
+    #   if d_results.length == 1
+    #     big_winner = d_results[0]
+    #   end
+    # end
+    # d_results = []
+    # 0.upto(board_dimensions - 1) do |i|
+    #   d_results << @boards[ i * (@board_dimensions - 1) + @board_dimensions].winner_check(@current_player)
+    # end
+    # if d_results.uniq! != nil
+    #   if d_results.length == 1
+    #     big_winner = d_results[0]
+    #   end
+    # end
     big_winner
   end
 

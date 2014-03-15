@@ -17,6 +17,7 @@ class Board
       [1,5,9] - current_player.every_space[@board_number-1] == []||
       [3,5,7] - current_player.every_space[@board_number-1] == []
       @winner = current_player
+      @winner.name
     end
   end
 
